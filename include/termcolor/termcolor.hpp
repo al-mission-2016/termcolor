@@ -7,7 +7,10 @@
 //!
 //! :copyright: (c) 2013 by Ihor Kalnytskyi
 //! :license: BSD, see LICENSE for details
-//!
+//! :v1.0
+//! 
+//! 2017/11: + ability to use 8-bit/24-bit colors by Alexei Mission (Linux)
+//! :v1.1
 
 #ifndef TERMCOLOR_HPP_
 #define TERMCOLOR_HPP_
@@ -40,7 +43,7 @@
 
 #include <iostream>
 #include <cstdio>
-
+#include <cstdint>
 
 
 namespace termcolor
@@ -434,6 +437,77 @@ namespace termcolor
         return stream;
     }
 
+
+    namespace _internal
+    {
+        struct color_index_8bit
+        {
+            std::uint8_t index;
+            bool foreground;
+        };
+
+        struct color_rgb_24bit
+        {
+            std::uint8_t red, green, blue;
+            bool foreground;
+        };
+    }
+
+    inline
+    _internal::color_index_8bit color(std::uint8_t index)
+    {
+        return { index, /* .foreground = */ true };
+    }
+
+    inline
+    _internal::color_rgb_24bit color(std::uint8_t red, std::uint8_t green, std::uint8_t blue)
+    {
+        return { red, green, blue, /* .foreground = */ true };
+    }
+
+    inline
+    _internal::color_index_8bit on_color(std::uint8_t index)
+    {
+        return { index, /* .foregound = */ false };
+    }
+
+    inline
+    _internal::color_rgb_24bit on_color(std::uint8_t red, std::uint8_t green, std::uint8_t blue)
+    {
+        return { red, green, blue, /* .foreground = */ false };
+    }
+
+    inline
+    std::ostream& operator<< (std::ostream& stream, _internal::color_index_8bit color)
+    {
+        if (_internal::is_colorized(stream))
+        {
+        #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
+            stream << "\033[" << (color.foreground ? '3' : '4') << "8;5;"
+                << static_cast<int>(color.index) << 'm';
+        #elif defined(TERMCOLOR_OS_WINDOWS)
+            // TODO: implement 8-bit indexed color support for Windows terminal
+        #endif
+        }
+        return stream;
+    }
+
+    inline
+    std::ostream& operator<< (std::ostream& stream, _internal::color_rgb_24bit rgb)
+    {
+        if (_internal::is_colorized(stream))
+        {
+        #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
+            stream << "\033[" << (rgb.foreground ? '3' : '4') << "8;2;"
+                << static_cast<int>(rgb.red  ) << ';'
+                << static_cast<int>(rgb.green) << ';'
+                << static_cast<int>(rgb.blue ) << 'm';
+        #elif defined(TERMCOLOR_OS_WINDOWS)
+            // TODO: implement 24-bit RGB color support for Windows terminal
+        #endif
+        }
+        return stream;
+    }
 
 
     //! Since C++ hasn't a way to hide something in the header from
