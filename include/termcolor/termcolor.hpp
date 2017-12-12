@@ -7,10 +7,10 @@
 //!
 //! :copyright: (c) 2013 by Ihor Kalnytskyi
 //! :license: BSD, see LICENSE for details
-//! :v1.0
+//! :v0.1
 //! 
 //! 2017/11: + ability to use 8-bit/24-bit colors by Alexei Mission (Linux)
-//! :v1.1
+//! :v0.2
 
 #ifndef TERMCOLOR_HPP_
 #define TERMCOLOR_HPP_
