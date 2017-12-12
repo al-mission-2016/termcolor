@@ -61,23 +61,23 @@ namespace termcolor
             color_rgb_24bit     rgb;
         };
 
-    enum color_type
-    {   color_type_none
-    ,   color_type_named
-    ,   color_type_indexed
-    ,   color_type_rgb
-    };
+        enum color_type
+        {   color_type_none
+        ,   color_type_named
+        ,   color_type_indexed
+        ,   color_type_rgb
+        };
 
-    enum color_name
-    {   color_grey
-    ,   color_red
-    ,   color_green
-    ,   color_yellow
-    ,   color_blue
-    ,   color_magenta
-    ,   color_cyan
-    ,   color_white
-    };
+        enum color_name
+        {   color_grey
+        ,   color_red
+        ,   color_green
+        ,   color_yellow
+        ,   color_blue
+        ,   color_magenta
+        ,   color_cyan
+        ,   color_white
+        };
 
     private:
         colors_tag  _colors;
