@@ -1,12 +1,12 @@
 //!
-//! styles
-//! ~~~~~~
+//! style
+//! ~~~~~
 //!
-//! "Styles" extends termcolor library by adding support of styles, i.e.
+//! "Style" extends termcolor library by adding support of styles, i.e.
 //! objects that keep color/attribute info. User can create several such
 //! style-objects to quickly change current ostream state.
 //!
-//! "Styles" is platform agnostic and depends only on "termcolor.hpp".
+//! "Style" is platform agnostic and depends only on "termcolor.hpp".
 //!
 //! Example.
 //!   style s1, s2;
@@ -18,8 +18,8 @@
 //! :license: BSD, see LICENSE for details
 //! :v0.2
 
-#ifndef STYLES_HPP
-#define STYLES_HPP
+#ifndef STYLE_HPP
+#define STYLE_HPP
 
 #include <termcolor/termcolor.hpp>
 
@@ -240,4 +240,4 @@ namespace termcolor
     }
 }
 
-#endif // STYLES_HPP
+#endif // STYLE_HPP
