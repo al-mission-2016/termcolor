@@ -29,7 +29,6 @@ namespace termcolor
     //! to the ostream updating current state.
     class style
     {
-    public:
         struct color_rgb_24bit
         {
             uint8_t foreground_red, foreground_green, foreground_blue;
@@ -53,7 +52,6 @@ namespace termcolor
             uint8_t background;
         };
 
-    private:
         union colors_tag
         {
             color_named_4bit    named;
