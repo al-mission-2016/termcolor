@@ -477,16 +477,15 @@ namespace termcolor
         return { red, green, blue, /* .foreground = */ false };
     }
 
-    inline
     std::ostream& operator<< (std::ostream& stream, _internal::color_index_8bit color)
     {
         if (_internal::is_colorized(stream))
         {
         #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
-            stream << "\033[" << (color.foreground ? '3' : '4') << "8;5;"
+            stream << (color.foreground ? "\033[38;5;" : "\033[48;5;")
                 << static_cast<int>(color.index) << 'm';
         #elif defined(TERMCOLOR_OS_WINDOWS)
-            // TODO: implement 8-bit indexed color support for Windows terminal
+            // TODO: implement 8-bit indexed color support for Windows terminal.
         #endif
         }
         return stream;
@@ -498,7 +497,7 @@ namespace termcolor
         if (_internal::is_colorized(stream))
         {
         #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
-            stream << "\033[" << (rgb.foreground ? '3' : '4') << "8;2;"
+            stream << (rgb.foreground ? "\033[38;2;" : "\033[48;2;")
                 << static_cast<int>(rgb.red  ) << ';'
                 << static_cast<int>(rgb.green) << ';'
                 << static_cast<int>(rgb.blue ) << 'm';
