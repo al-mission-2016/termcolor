@@ -29,7 +29,7 @@
 #endif
 
 
-// This headers provides the `isatty()`/`fileno()` functions,
+// These headers provides the `isatty()`/`fileno()` functions,
 // which are used for testing whether a standart stream refers
 // to the terminal. As for Windows, we also need WinApi funcs
 // for changing colors attributes of the terminal.
@@ -43,7 +43,11 @@
 
 #include <iostream>
 #include <cstdio>
-#include <cstdint>
+
+// 8/24-bit coloring exploits the "uint8_t" type i.e. "unsigned char". For
+// backward compatibility with pre-C++11 compilers it's better to use <stdint.h>
+// and global uint8_t than C++11's <cstdint> and scoped std::uint8_t.
+#include <stdint.h>
 
 
 namespace termcolor
@@ -442,37 +446,37 @@ namespace termcolor
     {
         struct color_index_8bit
         {
-            std::uint8_t index;
+            uint8_t index;
             bool foreground;
         };
 
         struct color_rgb_24bit
         {
-            std::uint8_t red, green, blue;
+            uint8_t red, green, blue;
             bool foreground;
         };
     }
 
     inline
-    _internal::color_index_8bit color(std::uint8_t index)
+    _internal::color_index_8bit color(uint8_t index)
     {
         return { index, /* .foreground = */ true };
     }
 
     inline
-    _internal::color_rgb_24bit color(std::uint8_t red, std::uint8_t green, std::uint8_t blue)
+    _internal::color_rgb_24bit color(uint8_t red, uint8_t green, uint8_t blue)
     {
         return { red, green, blue, /* .foreground = */ true };
     }
 
     inline
-    _internal::color_index_8bit on_color(std::uint8_t index)
+    _internal::color_index_8bit on_color(uint8_t index)
     {
         return { index, /* .foregound = */ false };
     }
 
     inline
-    _internal::color_rgb_24bit on_color(std::uint8_t red, std::uint8_t green, std::uint8_t blue)
+    _internal::color_rgb_24bit on_color(uint8_t red, uint8_t green, uint8_t blue)
     {
         return { red, green, blue, /* .foreground = */ false };
     }
