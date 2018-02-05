@@ -9,7 +9,7 @@
 //! "Style" is platform agnostic and depends only on "termcolor.hpp".
 //!
 //! Example.
-//!   style s1, s2;
+//!   style st1, st2;
 //!   st1.red().bold();
 //!   st2.blue().on_white().underline();
 //!   cout << st1 << "Cosmos " << st2 << "is wonderful" << reset << endl;
