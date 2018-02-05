@@ -481,6 +481,7 @@ namespace termcolor
         return { red, green, blue, /* .foreground = */ false };
     }
 
+    inline
     std::ostream& operator<< (std::ostream& stream, _internal::color_index_8bit color)
     {
         if (_internal::is_colorized(stream))
