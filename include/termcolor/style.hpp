@@ -9,14 +9,14 @@
 //! "Style" is platform agnostic and depends only on "termcolor.hpp".
 //!
 //! Example.
-//!   style st1, st2;
-//!   st1.red().bold();
-//!   st2.blue().on_white().underline();
-//!   cout << st1 << "Cosmos " << st2 << "is wonderful" << reset << endl;
+//!   style s, t;
+//!   s << yellow << on_red << bold;
+//!   t.grey().on_green().dark();
+//!   cout << s << "Hello " << t << "С++" << s << "!" << reset << endl;
 //!
-//! :copyright: (c) 2017 by Alexei Mission
+//! :copyright: (c) 2017 by Alexey Mission
 //! :license: BSD, see LICENSE for details
-//! :v0.2
+//! :v0.3
 
 #ifndef STYLE_HPP
 #define STYLE_HPP
@@ -93,6 +93,11 @@ namespace termcolor
     public:
         style()
         {
+            clear();
+        }
+
+        void clear()
+        {
             _colors.rgb.clear();
             _foreground_type = color_type_none;
             _background_type = color_type_none;
@@ -160,6 +165,11 @@ namespace termcolor
             _colors.rgb.background_blue  = blue_ ;
             _background_type = color_type_rgb;
             return *this;
+        }
+
+        style& operator<< (const style& rhs)
+        {
+            return (*this = rhs);
         }
     };
 
@@ -236,6 +246,83 @@ namespace termcolor
 
         return stream;
     }
-}
+
+    //! A syntactic sugar.
+    //! Example: st << yellow << on_blue << bold;
+    inline
+    style& operator<< (style& st, std::ostream& (*fun)(std::ostream&))
+    {
+        //! This code looks deceivingly inefficient due to linear search,
+        //! but most likely the compiler is able to replace the search with
+        //! direct function call since usually the passing \a fun pointer
+        //! is known at compile time.
+        //!
+        if ( 0 ) ;
+        else if ( fun == grey       ) st.grey      ();
+        else if ( fun == red        ) st.red       ();
+        else if ( fun == green      ) st.green     ();
+        else if ( fun == yellow     ) st.yellow    ();
+        else if ( fun == blue       ) st.blue      ();
+        else if ( fun == magenta    ) st.magenta   ();
+        else if ( fun == cyan       ) st.cyan      ();
+        else if ( fun == white      ) st.white     ();
+        else if ( fun == on_grey    ) st.on_grey   ();
+        else if ( fun == on_red     ) st.on_red    ();
+        else if ( fun == on_green   ) st.on_green  ();
+        else if ( fun == on_yellow  ) st.on_yellow ();
+        else if ( fun == on_blue    ) st.on_blue   ();
+        else if ( fun == on_magenta ) st.on_magenta();
+        else if ( fun == on_cyan    ) st.on_cyan   ();
+        else if ( fun == on_white   ) st.on_white  ();
+        else if ( fun == reset      ) st.reset     ();
+        else if ( fun == bold       ) st.bold      ();
+        else if ( fun == dark       ) st.dark      ();
+        else if ( fun == underline  ) st.underline ();
+        else if ( fun == blink      ) st.blink     ();
+        else if ( fun == reverse    ) st.reverse   ();
+        else if ( fun == concealed  ) st.concealed ();
+
+        return st;
+    }
+
+    //! Example: st << color(200) << on_color(100);
+    inline
+    style& operator<< (style& st, _internal::color_index_8bit color)
+    {
+        color.foreground
+            ? st.color   ( color.index )
+            : st.on_color( color.index )
+            ;
+        return st;
+    }
+
+    //! Example: st << color(0,100,100) << on_color(50,0,0);
+    inline
+    style& operator<< (style& st, _internal::color_rgb_24bit rgb)
+    {
+        rgb.foreground
+            ? st.color   ( rgb.red, rgb.green, rgb.blue )
+            : st.on_color( rgb.red, rgb.green, rgb.blue )
+            ;
+        return st;
+    }
+
+    //! Remove some modifiers. Note that you can't "remove" a color.
+    inline
+    style& operator>> (style& st, std::ostream& (*fun)(std::ostream&))
+    {
+        if ( 0 ) ;
+        else if ( fun == reset     ) st.reset     ( false );
+        else if ( fun == bold      ) st.bold      ( false );
+        else if ( fun == dark      ) st.dark      ( false );
+        else if ( fun == underline ) st.underline ( false );
+        else if ( fun == blink     ) st.blink     ( false );
+        else if ( fun == reverse   ) st.reverse   ( false );
+        else if ( fun == concealed ) st.concealed ( false );
+
+        return st;
+    }
+
+} // namespace termcolor
 
 #endif // STYLE_HPP
