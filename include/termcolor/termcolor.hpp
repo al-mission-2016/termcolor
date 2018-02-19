@@ -455,6 +455,29 @@ namespace termcolor
             uint8_t red, green, blue;
             bool foreground;
         };
+
+        #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
+        struct ansi_color
+        {
+            char buffer[24];
+
+            ansi_color(color_index_8bit color)
+            {
+                ::sprintf(buffer, "\033[" "%c" "8;5;" "%im",
+                    (color.foreground ? '3':'4'), color.index);
+            }
+
+            ansi_color(color_rgb_24bit rgb)
+            {
+                ::sprintf(buffer, "\033[" "%c" "8;2;" "%i;" "%i;" "%im",
+                    (rgb.foreground ? '3':'4'), rgb.red, rgb.green, rgb.blue);
+            }
+
+            operator const char* () const { return buffer; }
+        };
+        #elif defined(TERMCOLOR_OS_WINDOWS)
+            // TODO: add an appropriate helper if necessary.
+        #endif
     }
 
     inline
@@ -487,8 +510,7 @@ namespace termcolor
         if (_internal::is_colorized(stream))
         {
         #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
-            stream << (color.foreground ? "\033[38;5;" : "\033[48;5;")
-                << static_cast<int>(color.index) << 'm';
+            stream << _internal::ansi_color(color);
         #elif defined(TERMCOLOR_OS_WINDOWS)
             // TODO: implement 8-bit indexed color support for Windows terminal.
         #endif
@@ -497,15 +519,12 @@ namespace termcolor
     }
 
     inline
-    std::ostream& operator<< (std::ostream& stream, _internal::color_rgb_24bit rgb)
+    std::ostream& operator<< (std::ostream& stream, _internal::color_rgb_24bit color)
     {
         if (_internal::is_colorized(stream))
         {
         #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
-            stream << (rgb.foreground ? "\033[38;2;" : "\033[48;2;")
-                << static_cast<int>(rgb.red  ) << ';'
-                << static_cast<int>(rgb.green) << ';'
-                << static_cast<int>(rgb.blue ) << 'm';
+            stream << _internal::ansi_color(color);
         #elif defined(TERMCOLOR_OS_WINDOWS)
             // TODO: implement 24-bit RGB color support for Windows terminal
         #endif
@@ -516,7 +535,7 @@ namespace termcolor
 
     //! Since C++ hasn't a way to hide something in the header from
     //! the outer access, I have to introduce this namespace which
-    //! is used for internal purpose and should't be access from
+    //! is used for internal purpose and should't be accessed from
     //! the user code.
     namespace _internal
     {
