@@ -287,7 +287,7 @@ namespace termcolor
 
     //! Example: st << color(200) << on_color(100);
     inline
-    style& operator<< (style& st, _internal::color_index_8bit color)
+    style& operator<< (style& st, __color_index_8bit color)
     {
         color.foreground
             ? st.color   ( color.index )
@@ -298,7 +298,7 @@ namespace termcolor
 
     //! Example: st << color(0,100,100) << on_color(50,0,0);
     inline
-    style& operator<< (style& st, _internal::color_rgb_24bit rgb)
+    style& operator<< (style& st, __color_rgb_24bit rgb)
     {
         rgb.foreground
             ? st.color   ( rgb.red, rgb.green, rgb.blue )
