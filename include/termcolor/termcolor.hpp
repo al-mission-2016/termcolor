@@ -9,7 +9,7 @@
 //! :license: BSD, see LICENSE for details
 //! :v0.1
 //! 
-//! 2017/11: + ability to use 8-bit/24-bit colors by Alexei Mission (Linux)
+//! 2017/11: + ability to use 8-bit/24-bit colors by Alexey Mission (Linux)
 //! :v0.2
 
 #ifndef TERMCOLOR_HPP_
@@ -442,32 +442,33 @@ namespace termcolor
     }
 
 
+
+    struct __color_index_8bit
+    {
+        uint8_t index;
+        bool foreground;
+    };
+
+    struct __color_rgb_24bit
+    {
+        uint8_t red, green, blue;
+        bool foreground;
+    };
+
     namespace _internal
     {
-        struct color_index_8bit
-        {
-            uint8_t index;
-            bool foreground;
-        };
-
-        struct color_rgb_24bit
-        {
-            uint8_t red, green, blue;
-            bool foreground;
-        };
-
         #if defined(TERMCOLOR_OS_MACOS) || defined(TERMCOLOR_OS_LINUX)
         struct ansi_color
         {
             char buffer[24];
 
-            ansi_color(color_index_8bit color)
+            ansi_color(__color_index_8bit color)
             {
                 ::sprintf(buffer, "\033[" "%c" "8;5;" "%im",
                     (color.foreground ? '3':'4'), color.index);
             }
 
-            ansi_color(color_rgb_24bit rgb)
+            ansi_color(__color_rgb_24bit rgb)
             {
                 ::sprintf(buffer, "\033[" "%c" "8;2;" "%i;" "%i;" "%im",
                     (rgb.foreground ? '3':'4'), rgb.red, rgb.green, rgb.blue);
@@ -478,34 +479,35 @@ namespace termcolor
         #elif defined(TERMCOLOR_OS_WINDOWS)
             // TODO: add an appropriate helper if necessary.
         #endif
-    }
+
+    } // namespace _internal
 
     inline
-    _internal::color_index_8bit color(uint8_t index)
+    __color_index_8bit color(uint8_t index)
     {
         return { index, /* .foreground = */ true };
     }
 
     inline
-    _internal::color_rgb_24bit color(uint8_t red, uint8_t green, uint8_t blue)
+    __color_rgb_24bit color(uint8_t red, uint8_t green, uint8_t blue)
     {
         return { red, green, blue, /* .foreground = */ true };
     }
 
     inline
-    _internal::color_index_8bit on_color(uint8_t index)
+    __color_index_8bit on_color(uint8_t index)
     {
         return { index, /* .foregound = */ false };
     }
 
     inline
-    _internal::color_rgb_24bit on_color(uint8_t red, uint8_t green, uint8_t blue)
+    __color_rgb_24bit on_color(uint8_t red, uint8_t green, uint8_t blue)
     {
         return { red, green, blue, /* .foreground = */ false };
     }
 
     inline
-    std::ostream& operator<< (std::ostream& stream, _internal::color_index_8bit color)
+    std::ostream& operator<< (std::ostream& stream, __color_index_8bit color)
     {
         if (_internal::is_colorized(stream))
         {
@@ -519,7 +521,7 @@ namespace termcolor
     }
 
     inline
-    std::ostream& operator<< (std::ostream& stream, _internal::color_rgb_24bit color)
+    std::ostream& operator<< (std::ostream& stream, __color_rgb_24bit color)
     {
         if (_internal::is_colorized(stream))
         {
